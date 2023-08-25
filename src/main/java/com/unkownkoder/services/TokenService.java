@@ -31,14 +31,17 @@ public class TokenService {
 //            .collect(Collectors.joining(" "));
 
         // it has only one authority
-        String scope = auth.getAuthorities().toString();
-        
+        StringBuilder scope = new StringBuilder();
+        auth.getAuthorities().stream()
+                .findFirst()
+                .ifPresent(s -> scope.append(s.getAuthority()));
+
         System.out.println("in com.unkownkoder.services.TokenService " + scope);
         JwtClaimsSet claims = JwtClaimsSet.builder()
             .issuer("self")
             .issuedAt(now)
             .subject(auth.getName())
-            .claim("roles", scope)
+            .claim("roles", scope.toString())
             .build();
 
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
